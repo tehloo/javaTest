@@ -1,27 +1,41 @@
-package com.tehloo;
+package com.company;
 
 public class MyRect {
     public int x1, y1, x2, y2;
 
     public MyRect(String[] splits) {
+        int _x1 = 0, _y1 = 0, _x2 = 0, _y2 = 0;
 
         for (int i = 0; i < splits.length; i++) {
             int n = Integer.parseInt(splits[i]);
             switch(i) {
                 case 0:
-                    x1 = n;
+                    _x1 = n;
                     break;
                 case 1:
-                    y1 = n;
+                    _y1 = n;
                     break;
                 case 2:
-                    x2 = n;
+                    _x2 = n;
                     break;
                 case 3:
-                    y2 = n;
+                    _y2 = n;
                     break;
             }
-
+            if (_x1 < _x2) {
+                x1 = _x1;
+                x2 = _x2;
+            } else {
+                x1 = _x2;
+                x2 = _x1;
+            }
+            if (_y1 < _y2) {
+                y1 = _y1;
+                y2 = _y2;
+            } else {
+                y1 = _y2;
+                y2 = _y1;
+            }
         }
     }
 

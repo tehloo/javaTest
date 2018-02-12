@@ -1,13 +1,10 @@
 package com.company;
 
-import com.tehloo.MyRect;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.*;
 
 public class Main {
-    static Map<Integer, Integer> sMapCount;
+    static Map<String, Integer> sMapCount;
+    static final boolean DEBUG = false;
 
     public static void main(String[] args) {
 
@@ -25,9 +22,22 @@ public class Main {
         MyRect range = getMaxRange(rects);
         scanRanges(range, rects);
 
+        if (DEBUG) {
+            System.out.println("Rects " + count + "/ Range is " + range.toString());
+        }
 
 
-        System.out.println("Rects " + count + "/ Range is " + range.toString());
+        Iterator<String> keys = sMapCount.keySet().iterator();
+
+        int i = 0;
+        int maxSize = 0;
+        while (keys.hasNext()) {
+            int size = sMapCount.get(keys.next());
+            maxSize = maxSize < size ? size : maxSize;
+            //System.out.println(i + " - " +  sMapCount.get(key));
+            i++;
+        }
+        System.out.println(" All rect is " + (i - 1) + " and Max size is " + maxSize);
 
     }
 
@@ -36,27 +46,23 @@ public class Main {
 
         for (int x = range.x1; x < range.x2; x++) {
             for (int y = range.y1; y < range.y2; y++) {
+                PosVal pos = new PosVal();
                 for (int i = 0; i < rects.size(); i++) {
                     MyRect rect = rects.get(i);
-                    if (rect.x1 <= x && rect.x2 >= x
-                            && rect.y1 <= y && rect.y2 >= y) {
-                        markIt(i);
+                    if (rect.x1 <= x && rect.x2 > x
+                            && rect.y1 <= y && rect.y2 > y) {
+                        pos.markIt(i);
                     }
+                }
+                if (DEBUG) System.out.println(x + ", " + y + " = " + pos.toString());
+                String key = pos.toString();
+                if (sMapCount.get(key) == null) {
+                    sMapCount.put(pos.toString(), 1);
+                } else {
+                    sMapCount.put(pos.toString(), sMapCount.get(key) + 1);
                 }
             }
         }
-    }
-
-    private static void markIt(int i) {
-        int bytePos = i / 8;
-
-        byte[] fullMark = new byte[6250]; // 50,000 / 8
-        Arrays.fill(fullMark, (byte) 0x00);
-
-        fullMark[bytePos] = (byte) (1 << i);
-        Integer count = sMapCount.get(mark);
-        count = count == null ? 1 : count++;
-        sMapCount.put(mark, count);
     }
 
     public  int byteArrayToInt(byte bytes[]) {
@@ -70,7 +76,7 @@ public class Main {
         MyRect range = new MyRect(10000, 10000, 0, 0);
         for (int i = 0; i < rects.size(); i++) {
             MyRect rect = rects.get(i);
-            System.out.println("Rect #" + i + " - " + rect.toString());
+            if (DEBUG) System.out.println("Rect #" + i + " - " + rect.toString());
             MyRect normal = new MyRect(0,0,0,0);
 
             normal.x1 = rect.x1 < rect.x2 ? rect.x1 : rect.x2;
